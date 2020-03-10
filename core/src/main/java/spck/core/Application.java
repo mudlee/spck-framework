@@ -1,4 +1,4 @@
-package spck.desktop;
+package spck.core;
 
 import org.lwjgl.bgfx.BGFXInit;
 import org.lwjgl.bgfx.BGFXPlatformData;
@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import spck.core.eventbus.MessageBus;
 import spck.core.input.Input;
 import spck.core.render.MainRenderer;
+import spck.core.render.bgfx.VertexLayoutContext;
 import spck.core.render.lifecycle.*;
 
 import static org.lwjgl.bgfx.BGFX.*;
@@ -21,8 +22,8 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.APIUtil.DEBUG_STREAM;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-abstract public class DesktopApplication {
-	private static final Logger log = LoggerFactory.getLogger(DesktopApplication.class);
+abstract public class Application {
+	private static final Logger log = LoggerFactory.getLogger(Application.class);
 	private final FrameStartEvent frameStartEvent = new FrameStartEvent();
 	private final UpdateEvent updateEvent = new UpdateEvent();
 	private final AfterUpdateEvent afterUpdateEvent = new AfterUpdateEvent();
@@ -32,7 +33,7 @@ abstract public class DesktopApplication {
 	protected final MessageBus appLifeCycle = new MessageBus();
 	protected MainRenderer mainRenderer;
 
-	public DesktopApplication(DesktopWindowPreferences windowPreferences) {
+	public Application(DesktopWindowPreferences windowPreferences) {
 		this.window = new DesktopWindow(windowPreferences, appLifeCycle);
 		this.input = new Input(appLifeCycle);
 	}
@@ -52,9 +53,11 @@ abstract public class DesktopApplication {
 		// INPUT HANDLING
 		log.debug("Setting up input callbacks");
 		glfwSetKeyCallback(window.getId(), (window, key, scancode, action, mods) -> input.keyCallback(key, scancode, action, mods));
-		glfwSetCursorPosCallback(window.getId(), (window, x, y) -> input.cursorPosCallback(x, y));initBgfx();
+		glfwSetCursorPosCallback(window.getId(), (window, x, y) -> input.cursorPosCallback(x, y));
 		glfwSetScrollCallback(window.getId(), (window, xOffset, yOffset) -> input.mouseScrollCallback(xOffset, yOffset));
 		glfwSetMouseButtonCallback(window.getId(), (window, button, action, mods) -> input.mouseButtonCallback(button, action, mods));
+
+		initBgfx();
 
 		appLifeCycle.broadcast(new InitializedEvent());
 		log.debug("Application has been initialized");
@@ -123,6 +126,8 @@ abstract public class DesktopApplication {
 			window.setResolutionFormat(init.resolution().format());
 
 			int renderer = bgfx_get_renderer_type();
+			VertexLayoutContext.setup(renderer);
+
 			String rendererName = bgfx_get_renderer_name(renderer);
 			if ("NULL".equals(rendererName)) {
 				throw new RuntimeException("Error identifying bgfx renderer");

@@ -1,4 +1,4 @@
-package spck.desktop;
+package spck.core;
 
 import org.joml.Vector2d;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -31,7 +31,7 @@ public class DesktopWindow {
 		this.appLifeCycle = appLifeCycle;
 	}
 
-	void create() {
+	public void create() {
 		log.debug("Initialising window with preferences {}", preferences);
 
 		glfwDefaultWindowHints();

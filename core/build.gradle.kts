@@ -24,9 +24,11 @@ dependencies {
     api("org.lwjgl", "lwjgl")
     api("org.lwjgl", "lwjgl-bgfx")
     api("org.lwjgl", "lwjgl-glfw")
+    api("org.lwjgl", "lwjgl-assimp")
     runtimeOnly("org.lwjgl", "lwjgl", classifier = lwjglNatives)
     runtimeOnly("org.lwjgl", "lwjgl-bgfx", classifier = lwjglNatives)
     runtimeOnly("org.lwjgl", "lwjgl-glfw", classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-assimp", classifier = lwjglNatives)
 
     api("org.joml", "joml", jomlVersion)
     api("org.slf4j", "slf4j-api", slf4jVersion)

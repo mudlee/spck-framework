@@ -4,7 +4,6 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.bgfx.BGFXMemory;
 import org.lwjgl.bgfx.BGFXReleaseFunctionCallback;
-import org.lwjgl.bgfx.BGFXVertexLayout;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -23,84 +22,6 @@ public class MainRenderer {
 	public MainRenderer(int renderer) {
 		this.renderer = renderer;
 		zZeroToOne = !bgfx_get_caps().homogeneousDepth();
-	}
-
-	public BGFXVertexLayout createVertexLayout(boolean withNormals, boolean withColor, int numUVs) {
-		BGFXVertexLayout layout = BGFXVertexLayout.calloc();
-
-		bgfx_vertex_layout_begin(layout, renderer);
-
-		bgfx_vertex_layout_add(
-				layout,
-				BGFX_ATTRIB_POSITION,
-				3,
-				BGFX_ATTRIB_TYPE_FLOAT,
-				false,
-				false
-		);
-
-		if (withNormals) {
-			bgfx_vertex_layout_add(
-					layout,
-					BGFX_ATTRIB_NORMAL,
-					3,
-					BGFX_ATTRIB_TYPE_FLOAT,
-					false,
-					false
-			);
-		}
-
-		if (withColor) {
-			bgfx_vertex_layout_add(
-					layout,
-					BGFX_ATTRIB_COLOR0,
-					4,
-					BGFX_ATTRIB_TYPE_UINT8,
-					true,
-					false
-			);
-		}
-
-		if (numUVs > 0) {
-			bgfx_vertex_layout_add(
-					layout,
-					BGFX_ATTRIB_TEXCOORD0,
-					2,
-					BGFX_ATTRIB_TYPE_FLOAT,
-					false,
-					false
-			);
-		}
-
-		bgfx_vertex_layout_end(layout);
-		return layout;
-	}
-
-	public short createVertexBuffer(ByteBuffer buffer, BGFXVertexLayout layout, Object[][] vertices) {
-		for (Object[] vtx : vertices) {
-			for (Object attr : vtx) {
-				if (attr instanceof Float) {
-					buffer.putFloat((float) attr);
-				} else if (attr instanceof Integer) {
-					buffer.putInt((int) attr);
-				} else {
-					throw new RuntimeException("Invalid parameter type");
-				}
-			}
-		}
-
-		if (buffer.remaining() != 0) {
-			throw new RuntimeException("ByteBuffer size and number of arguments do not match");
-		}
-
-		buffer.flip();
-
-		return createVertexBuffer(buffer, layout);
-	}
-
-	public short createVertexBuffer(ByteBuffer buffer, BGFXVertexLayout layout) {
-		BGFXMemory vbhMem = bgfx_make_ref(buffer);
-		return bgfx_create_vertex_buffer(vbhMem, layout, BGFX_BUFFER_NONE);
 	}
 
 	public short createIndexBuffer(ByteBuffer buffer, int[] indices) {

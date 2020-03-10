@@ -18,8 +18,6 @@ architecture.
 
 More or less in priority order:
 
-* Simple rotating cube instead of the current example 
-* Model loading via Assimp (materials, transforms, meshes, etc.)
 * Rewrite the demo shaders (basic lights (ambient, point, spot, etc) support)
 * Windows & DX, Linux & Vulkan support
 * Tools for shader compilation

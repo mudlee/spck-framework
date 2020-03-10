@@ -1,6 +1,4 @@
-package spck.desktop;
-
-import spck.core.Antialiasing;
+package spck.core;
 
 public class DesktopWindowPreferences {
 	public Antialiasing antialiasing = Antialiasing.OFF;

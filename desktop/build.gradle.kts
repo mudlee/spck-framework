@@ -21,9 +21,10 @@ nativeJars.forEach {
 }
 
 fun getJvmArgs(): List<String> {
-    val extraJvmArgs = if (OperatingSystem.current() == OperatingSystem.MAC_OS) listOf("-XstartOnFirstThread") else emptyList()
-    val args = listOf("-cp", nativeJars.joinToString(File.pathSeparator), "-Dorg.lwjgl.util.DebugLoader=true", "-Dorg.lwjgl.util.Debug=true", "-Dorg.lwjgl.opengl.Display.enableHighDPI=true", "-Dorg.lwjgl.opengl.Display.enableOSXFullscreenModeAPI=true")
-    args.plus(extraJvmArgs)
+    logger.quiet("OS: ${OperatingSystem.current()}");
+    val extraJvmArgs = if (OperatingSystem.current().isMacOsX) listOf("-XstartOnFirstThread") else emptyList()
+    var args = listOf("-cp", nativeJars.joinToString(File.pathSeparator), "-Dorg.lwjgl.system.allocator=system", "-Dorg.lwjgl.util.DebugLoader=true", "-Dorg.lwjgl.util.Debug=true", "-Dorg.lwjgl.opengl.Display.enableHighDPI=true", "-Dorg.lwjgl.opengl.Display.enableOSXFullscreenModeAPI=true")
+    args = args.plus(extraJvmArgs)
     return args
 }
 
