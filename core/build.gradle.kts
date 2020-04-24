@@ -13,6 +13,7 @@ val lwjglNatives = when (OperatingSystem.current()) {
     else -> throw Error("Unrecognized or unsupported Operating system. Please set \"lwjglNatives\" manually")
 }
 val slf4jVersion = "1.8.0-beta4"
+var disruptorVersion = "1.2.17"
 
 logger.quiet("Natives in use: $lwjglNatives")
 
@@ -33,4 +34,5 @@ dependencies {
     api("org.joml", "joml", jomlVersion)
     api("org.slf4j", "slf4j-api", slf4jVersion)
     api("org.slf4j", "slf4j-simple", slf4jVersion)
+    api("com.conversantmedia","disruptor", disruptorVersion)
 }

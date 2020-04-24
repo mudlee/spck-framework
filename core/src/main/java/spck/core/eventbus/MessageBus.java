@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class MessageBus {
+    public static final MessageBus global = new MessageBus();
+
     private final List<Consumer<Event>> CONSUMER_EMPTY_LIST = new ArrayList<>();
     private final List<Runnable> RUNNABLE_EMPTY_LIST = new ArrayList<>();
     private final Map<String, List<Consumer<Event>>> consumers = new HashMap<>();
