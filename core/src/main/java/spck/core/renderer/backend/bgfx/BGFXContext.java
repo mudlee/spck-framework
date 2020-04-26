@@ -31,12 +31,15 @@ public class BGFXContext extends GraphicsContext {
     private int resolutionFormat;
     private int windowWidth;
     private int windowHeight;
+    private boolean debug;
+    private String rendererName;
 
     @Override
-    public void init(long windowId, int windowWidth, int windowHeight) {
+    public void init(long windowId, int windowWidth, int windowHeight, boolean debug) {
         log.debug("Initializing BGFX context...");
         this.windowWidth = windowWidth;
         this.windowHeight = windowHeight;
+        this.debug = debug;
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
             bgfx_set_platform_data(setupPlatform(stack, windowId));
@@ -63,12 +66,17 @@ public class BGFXContext extends GraphicsContext {
 
             renderer = bgfx_get_renderer_type();
 
-            String rendererName = bgfx_get_renderer_name(renderer);
+            rendererName = bgfx_get_renderer_name(renderer);
             if ("NULL".equals(rendererName)) {
                 throw new RuntimeException("Error identifying bgfx renderer");
             }
 
             log.debug("Used renderer: "+rendererName);
+
+            if(debug) {
+                log.debug("DEBUG MODE ENABLED");
+                bgfx_set_debug(BGFX_DEBUG_TEXT);
+            }
         }
 
         log.debug("BGFX context has been initialized");
@@ -86,10 +94,17 @@ public class BGFXContext extends GraphicsContext {
                 0x303030ff, // TODO use the saved color or default
                 1.0f,
                 0);
+        if(debug){
+            bgfx_dbg_text_clear(0, false);
+        }
     }
 
     @Override
-    public void swapBuffers(ConcurrentQueue<SubmitCommand> commandQueue) {
+    public void swapBuffers(float frameTime, ConcurrentQueue<SubmitCommand> commandQueue) {
+        bgfx_dbg_text_printf(1, 1, 0x0f, "RENDERER API: BGFX");
+        bgfx_dbg_text_printf(1, 2, 0x0f, String.format("BACKEND: %s", rendererName));
+        bgfx_dbg_text_printf(1, 3, 0x0f, String.format("Frame: %7.3fms", frameTime));
+
         bgfx_set_view_rect(0, 0, 0, windowWidth, windowHeight);
 
         while (!commandQueue.isEmpty()) {

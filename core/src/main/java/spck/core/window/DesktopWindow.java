@@ -25,11 +25,13 @@ public class DesktopWindow {
 	private final DoubleBuffer mouseCursorAbsolutePositionX = MemoryUtil.memAllocDouble(1);
 	private final DoubleBuffer mouseCursorAbsolutePositionY = MemoryUtil.memAllocDouble(1);
 	private final DesktopWindowPreferences preferences;
+	private final boolean debug;
 	private final WindowResizedEvent windowResizedEvent = new WindowResizedEvent();
 	private long id;
 
-	public DesktopWindow(DesktopWindowPreferences preferences) {
+	public DesktopWindow(DesktopWindowPreferences preferences, boolean debug) {
 		this.preferences = preferences;
+		this.debug = debug;
 		this.input = new Input();
 		MessageBus.global.subscribe(FrameStartEvent.key, org.lwjgl.glfw.GLFW::glfwPollEvents);
 	}
@@ -62,7 +64,7 @@ public class DesktopWindow {
 		glfwSetScrollCallback(id, (window, xOffset, yOffset) -> input.mouseScrollCallback(xOffset, yOffset));
 		glfwSetMouseButtonCallback(id, (window, button, action, mods) -> input.mouseButtonCallback(button, action, mods));
 
-		Renderer.init(id, preferences.width, preferences.height);
+		Renderer.init(id, preferences.width, preferences.height, debug);
 	}
 
 	public void dispose() {

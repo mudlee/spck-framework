@@ -43,9 +43,9 @@ public class Example extends Application {
 	};
 
 	private static final float[] triVert = {
-		-0.5f,-0.5f,0.0f,0xff000000,
-		0.5f,-0.5f,0.0f,0xff000000,
-		0.0f,0.5f,0.0f,0xff000000
+		-0.5f,-0.5f,0.0f,1f,0f,0f,1f,
+		0.5f,-0.5f,0.0f,0f,1f,0f,1f,
+		0.0f,0.5f,0.0f,0f,0f,1f,1f
 	};
 
 	private static final int[] triInd = {
@@ -64,7 +64,7 @@ public class Example extends Application {
 	private SubmitCommand triangle;
 
 	public Example() {
-		super(DesktopWindowPreferences.Builder.create().build());
+		super(DesktopWindowPreferences.Builder.create().build(), true);
 		MessageBus.global.subscribe(InitializedEvent.key, this::initialized);
 		MessageBus.global.subscribe(UpdateEvent.key,this::update);
 		MessageBus.global.subscribe(DisposeEvent.key,this::dispose);
@@ -83,7 +83,7 @@ public class Example extends Application {
 
 		VertexBufferLayout vertexBufferLayout = new VertexBufferLayout(
 			new VertexLayoutAttribute(0, 3, Renderer.dataType.FLOAT,false),
-			new VertexLayoutAttribute(4, 4, Renderer.dataType.UINT8,false)
+			new VertexLayoutAttribute(4, 4, Renderer.dataType.FLOAT,false)
 		);
 
 		VertexArray vertexArray = VertexArray.create();
@@ -103,9 +103,8 @@ public class Example extends Application {
 		Renderer.endScene();
 
 		/*bgfx_dbg_text_printf(0, 1, 0x4f, "bgfx/examples/01-cubes");
-		bgfx_dbg_text_printf(0, 2, 0x6f, "Description: Rendering simple static mesh.");
 		bgfx_dbg_text_printf(0, 3, 0x0f, String.format("Frame: %7.3f[ms]", ((UpdateEvent)event).frameTime));
-		//bgfx_dbg_text_printf(0, 4, 0x0f, String.format("RENDER %s", BGFXDemoUtil.getRendererType()));
+
 
 		renderer.mainRenderer.lookAt(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(0.0f, 0.0f, -35.0f), view);
 		renderer.mainRenderer.perspective(60.0f, window.getWidth(), window.getHeight(), 0.1f, 100.0f, proj);

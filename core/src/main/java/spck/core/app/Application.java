@@ -15,8 +15,8 @@ public abstract class Application {
     private boolean running;
     protected final DesktopWindow window;
 
-    public Application(DesktopWindowPreferences windowPreferences) {
-        this.window = new DesktopWindow(windowPreferences);
+    public Application(DesktopWindowPreferences windowPreferences, boolean debug) {
+        this.window = new DesktopWindow(windowPreferences, debug);
     }
 
     public final void run(){
@@ -49,11 +49,12 @@ public abstract class Application {
             MessageBus.global.broadcast(frameStartEvent);
             long now = System.nanoTime();
             long frameTimeNanos = now - lastTime;
+            float frameTime = frameTimeNanos / 1_000_000_000f;
             lastTime = now;
 
             // TODO
-            updateEvent.set(60f, frameTimeNanos / 1_000_000_000f);
-            Renderer.swapBuffers();
+            updateEvent.set(60f, frameTime);
+            Renderer.swapBuffers(frameTime);
 
             MessageBus.global.broadcast(updateEvent);
         }
