@@ -56,9 +56,8 @@ public abstract class Application {
 
             // TODO
             updateEvent.set(60f, frameTime);
-            Renderer.swapBuffers(frameTime);
-
             MessageBus.global.broadcast(updateEvent);
+            Renderer.swapBuffers(frameTime);
         }
     }
 }

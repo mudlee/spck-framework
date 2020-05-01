@@ -5,15 +5,19 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 import static org.lwjgl.system.MemoryUtil.memAlloc;
 
 public class ResourceLoader {
     private static final Logger log = LoggerFactory.getLogger(ResourceLoader.class);
 
-    public static ByteBuffer load(String path){
+    public static ByteBuffer loadToByteBuffer(String path){
+        log.debug("Loading resource {}", path);
         try {
             URL url = ResourceLoader.class.getResource(path);
 
@@ -44,5 +48,15 @@ public class ResourceLoader {
         catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static String load(String path) {
+        log.debug("Loading resource {}", path);
+        InputStream in = ResourceLoader.class.getResourceAsStream(path);
+        if(in == null) {
+            throw new RuntimeException("Could not find resource: "+path);
+        }
+        Scanner scanner = new Scanner(in, StandardCharsets.UTF_8);
+        return scanner.useDelimiter("\\A").next();
     }
 }

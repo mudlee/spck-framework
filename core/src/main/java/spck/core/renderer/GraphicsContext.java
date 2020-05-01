@@ -4,7 +4,9 @@ import com.conversantmedia.util.concurrent.ConcurrentQueue;
 import org.joml.Vector4f;
 
 public abstract class GraphicsContext {
-    public abstract void init(long windowId, int windowWidth, int windowHeight, boolean debug);
+    public abstract void init();
+
+    public abstract void windowCreated(long windowId, int windowWidth, int windowHeight, boolean debug);
 
     public abstract void setClearFlags(int mask);
 
@@ -17,4 +19,5 @@ public abstract class GraphicsContext {
     public abstract void windowResized(int newWidth, int newHeight);
 
     public abstract void dispose();
+
 }

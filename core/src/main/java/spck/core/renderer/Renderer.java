@@ -10,51 +10,55 @@ import spck.core.renderer.backend.opengl.OpenGLDataType;
 import spck.core.renderer.camera.Camera;
 
 public class Renderer {
-    public static final DataType dataType = new OpenGLDataType();
+	public static final DataType dataType = new OpenGLDataType();
 
-    private static final Logger log = LoggerFactory.getLogger(Renderer.class);
-    private static final GraphicsContext context = new OpenGLContext();
-    private static final ConcurrentQueue<SubmitCommand> commandQueue = new PushPullConcurrentQueue<>(10); // TODO
+	private static final Logger log = LoggerFactory.getLogger(Renderer.class);
+	private static final GraphicsContext context = new OpenGLContext();
+	private static final ConcurrentQueue<SubmitCommand> commandQueue = new PushPullConcurrentQueue<>(1000);
 
-    public static void init(long windowId, int width, int height, boolean debug) {
-        context.init(windowId,width,height, debug);
-    }
+	public static void init() {
+		context.init();
+	}
 
-    public static void windowResized(int width, int height) {
-        context.windowResized(width,height);
-    }
+	public static void windowCreated(long windowId, int width, int height, boolean debug) {
+		context.windowCreated(windowId, width, height, debug);
+	}
 
-    public static void setClearColor(Vector4f color) {
-        context.setClearColor(color);
-    }
+	public static void windowResized(int width, int height) {
+		context.windowResized(width, height);
+	}
 
-    public static void setClearFlags(int mask){
-        context.setClearFlags(mask);
-    }
+	public static void setClearColor(Vector4f color) {
+		context.setClearColor(color);
+	}
 
-    public static void clear() {
-        context.clear();
-    }
+	public static void setClearFlags(int mask) {
+		context.setClearFlags(mask);
+	}
 
-    public static void startScene(Camera camera) {
-        // TBD: lights, camera, etc
-    }
+	public static void clear() {
+		context.clear();
+	}
 
-    public static void submit(SubmitCommand command) {
-        if(!commandQueue.offer(command)){
-            log.warn("Could not submit '{}'", command.describe());
-        }
-    }
+	public static void startScene(Camera camera) {
+		// TBD: lights, camera, etc
+	}
 
-    public static void endScene() {
-        // TBD, maybe batching, sorting
-    }
+	public static void submit(SubmitCommand command) {
+		if (!commandQueue.offer(command)) {
+			log.warn("Could not submit '{}', no more slot available", command.describe());
+		}
+	}
 
-    public static void swapBuffers(float frameTime) {
-        context.swapBuffers(frameTime, commandQueue);
-    }
+	public static void endScene() {
+		// TBD, maybe batching, sorting
+	}
 
-    public static void dispose() {
-        context.dispose();
-    }
+	public static void swapBuffers(float frameTime) {
+		context.swapBuffers(frameTime, commandQueue);
+	}
+
+	public static void dispose() {
+		context.dispose();
+	}
 }

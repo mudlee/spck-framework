@@ -9,5 +9,5 @@ public class VertexBufferLayout {
 
     public VertexLayoutAttribute[] getAttributes(){
         return attributes;
-    };
+    }
 }

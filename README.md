@@ -21,8 +21,8 @@ architecture.
 
 More or less in priority order:
 
+* Vulkan backend
 * Write the demo shaders (basic lights (ambient, point, spot, etc) support)
-* Windows & DX, Linux/OSX & Vulkan support
 * Tools for shader compilation
 * GUI system (Canvases, texts, buttons, etc.)
 * Batch rendering (maybe with ECS)

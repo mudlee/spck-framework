@@ -3,6 +3,9 @@ package spck.core.renderer;
 import spck.core.renderer.backend.RendererApi;
 import spck.core.renderer.backend.opengl.OpenGLVertexArray;
 
+import java.util.List;
+import java.util.Optional;
+
 public abstract class VertexArray {
     public static VertexArray create(){
         switch (RendererApi.backend) {
@@ -20,6 +23,10 @@ public abstract class VertexArray {
     public abstract void addVertexBuffer(VertexBuffer buffer);
 
     public abstract void setIndexBuffer(IndexBuffer indexBuffer);
+
+    public abstract List<VertexBuffer> getVertexBuffers();
+
+    public abstract Optional<IndexBuffer> getIndexBuffer();
 
     public abstract void dispose();
 }

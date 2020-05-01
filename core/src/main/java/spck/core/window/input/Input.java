@@ -1,10 +1,8 @@
 package spck.core.window.input;
 
 import org.joml.Vector2d;
-import spck.core.eventbus.Event;
-import spck.core.eventbus.MessageBus;
 import spck.core.app.events.UpdateEvent;
-import spck.core.app.events.WindowResizedEvent;
+import spck.core.eventbus.MessageBus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,8 +68,6 @@ public class Input {
 		this.windowHeight = params.windowHeight;
 		this.cursorPosSupplier = params.cursorPosSupplier;
 
-		// TODO maybe call directly from the windows
-		MessageBus.global.subscribe(WindowResizedEvent.key, this::windowResized);
 		MessageBus.global.subscribe(UpdateEvent.key, this::update);
 	}
 
@@ -181,6 +177,11 @@ public class Input {
 		}
 	}
 
+	public void windowResized(int width, int height) {
+		this.windowWidth = width;
+		this.windowHeight = height;
+	}
+
 	public void cursorPosCallback(double x, double y) {
 		calculateMovement(x, y);
 		for (Consumer<MouseMoveEvent> handler : mouseMoveHandlers) {
@@ -193,11 +194,6 @@ public class Input {
 		for (Consumer<MouseScrollEvent> handler : mouseScrollHandlers) {
 			handler.accept(mouseScrollEvent);
 		}
-	}
-
-	private void windowResized(Event event) {
-		this.windowWidth = ((WindowResizedEvent)event).width;
-		this.windowHeight = ((WindowResizedEvent)event).height;
 	}
 
 	private void update() {

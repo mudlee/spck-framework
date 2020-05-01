@@ -7,9 +7,9 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spck.core.eventbus.MessageBus;
 import spck.core.app.events.FrameStartEvent;
 import spck.core.app.events.WindowResizedEvent;
+import spck.core.eventbus.MessageBus;
 import spck.core.graphics.Antialiasing;
 import spck.core.renderer.Renderer;
 import spck.core.window.input.Input;
@@ -47,10 +47,12 @@ public class DesktopWindow {
 			throw new RuntimeException("Error initializing GLFW");
 		}
 
+		glfwSetErrorCallback(GLFWErrorCallback.createPrint(System.err));
+
 		glfwDefaultWindowHints();
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-		glfwSetErrorCallback(GLFWErrorCallback.createPrint(System.err));
+		Renderer.init();
 
 		videoMode = pickMonitor();
 
@@ -85,10 +87,10 @@ public class DesktopWindow {
 		log.debug("Setting up vsync");
 		glfwSwapInterval(preferences.vsync ? GLFW_TRUE : GLFW_FALSE);
 
-		Renderer.init(id, preferences.width, preferences.height, debug);
+		Renderer.windowCreated(id, preferences.width, preferences.height, debug);
 
-		if(!preferences.fullscreen) {
-			glfwSetWindowPos(id,(videoMode.width() - preferences.width) / 2,(videoMode.height() - preferences.height) / 2);
+		if (!preferences.fullscreen) {
+			glfwSetWindowPos(id, (videoMode.width() - preferences.width) / 2, (videoMode.height() - preferences.height) / 2);
 		}
 
 		glfwShowWindow(id);
@@ -122,16 +124,14 @@ public class DesktopWindow {
 
 	private GLFWVidMode pickMonitor() {
 		PointerBuffer buffer = glfwGetMonitors();
-		if(buffer == null) {
+		if (buffer == null) {
 			throw new RuntimeException("No monitors were found");
 		}
 
-		if(buffer.capacity() == 1){
+		if (buffer.capacity() == 1) {
 			log.info("Found one monitor: {}", glfwGetMonitorName(buffer.get()));
 			return glfwGetVideoMode(glfwGetPrimaryMonitor());
-		}
-		else {
-			// TODO: write a monitor picker here
+		} else {
 			log.info("Found multiple monitors:");
 			for (int i = 0; i < buffer.capacity(); i++) {
 				log.info(" Monitor-{} '{}'", i, glfwGetMonitorName(buffer.get(i)));
@@ -141,7 +141,7 @@ public class DesktopWindow {
 		}
 	}
 
-	private void cursorPositionHasChanged(Vector2d target){
+	private void cursorPositionHasChanged(Vector2d target) {
 		mouseCursorAbsolutePositionX.clear();
 		mouseCursorAbsolutePositionY.clear();
 		glfwGetCursorPos(id, mouseCursorAbsolutePositionX, mouseCursorAbsolutePositionY);
@@ -149,12 +149,14 @@ public class DesktopWindow {
 	}
 
 	private void resize(long window, int width, int height) {
-		Renderer.windowResized(width ,height);
+		Renderer.windowResized(width, height);
 
 		preferences.width = width;
 		preferences.height = height;
 
-		windowResizedEvent.set(width,height);
+		input.windowResized(width, height);
+
+		windowResizedEvent.set(width, height);
 		MessageBus.global.broadcast(windowResizedEvent);
 	}
 }

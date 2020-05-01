@@ -13,7 +13,7 @@ public abstract class Shader {
         }
     }
 
-    public abstract short getProgram();
+    public abstract int getProgram();
 
     public abstract void bind();
 

@@ -13,6 +13,10 @@ public abstract class IndexBuffer {
         }
     }
 
+    public abstract int getId();
+
+    public abstract int getLength();
+
     public abstract void bind();
 
     public abstract void unbind();
