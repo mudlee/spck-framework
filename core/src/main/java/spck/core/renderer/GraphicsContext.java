@@ -6,6 +6,8 @@ import org.joml.Vector4f;
 public abstract class GraphicsContext {
     public abstract void init(long windowId, int windowWidth, int windowHeight, boolean debug);
 
+    public abstract void setClearFlags(int mask);
+
     public abstract void setClearColor(Vector4f color);
 
     public abstract void clear();

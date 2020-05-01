@@ -1,10 +1,12 @@
 package spck.desktop;
 
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import spck.core.app.Application;
 import spck.core.eventbus.MessageBus;
-import spck.core.graphics.Color;
 import spck.core.renderer.*;
+import spck.core.renderer.camera.Camera;
+import spck.core.renderer.camera.OrthoCamera;
 import spck.core.window.DesktopWindowPreferences;
 import spck.core.eventbus.Event;
 import spck.core.app.events.DisposeEvent;
@@ -17,14 +19,14 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
 
 public class Example extends Application {
 	private static final float[] cubeVertices = {
-			-1.0f, 1.0f, 1.0f, 0xff000000,
-			1.0f, 1.0f, 1.0f, 0xff0000ff,
-			-1.0f, -1.0f, 1.0f, 0xff00ff00,
-			1.0f, -1.0f, 1.0f, 0xff00ffff,
-			-1.0f, 1.0f, -1.0f, 0xffff0000,
-			1.0f, 1.0f, -1.0f, 0xffff00ff,
-			-1.0f, -1.0f, -1.0f, 0xffffff00,
-			1.0f, -1.0f, -1.0f, 0xffffffff
+			-1.0f, 1.0f, 1.0f, 1f,0f,0f,1f,
+			1.0f, 1.0f, 1.0f, 1f,0f,0f,1f,
+			-1.0f, -1.0f, 1.0f, 1f,0f,0f,1f,
+			1.0f, -1.0f, 1.0f, 1f,0f,0f,1f,
+			-1.0f, 1.0f, -1.0f, 1f,0f,0f,1f,
+			1.0f, 1.0f, -1.0f, 1f,0f,0f,1f,
+			-1.0f, -1.0f, -1.0f, 1f,0f,0f,1f,
+			1.0f, -1.0f, -1.0f, 1f,0f,0f,1f
 	};
 
 	private static final int[] cubeIndices = {
@@ -52,19 +54,11 @@ public class Example extends Application {
 		0,1,2
 	};
 
-	private short program;
-
-	private Matrix4f view = new Matrix4f();
-	private FloatBuffer viewBuf;
-	private Matrix4f proj = new Matrix4f();
-	private FloatBuffer projBuf;
-	private Matrix4f model = new Matrix4f();
-	private FloatBuffer modelBuf;
-
 	private SubmitCommand triangle;
+	private Camera camera = new OrthoCamera();
 
 	public Example() {
-		super(DesktopWindowPreferences.Builder.create().build(), true);
+		super(DesktopWindowPreferences.Builder.create().withRendererBackend(RendererBackend.OPENGL).build(), true);
 		MessageBus.global.subscribe(InitializedEvent.key, this::initialized);
 		MessageBus.global.subscribe(UpdateEvent.key,this::update);
 		MessageBus.global.subscribe(DisposeEvent.key,this::dispose);
@@ -75,15 +69,11 @@ public class Example extends Application {
 	}
 
 	public void initialized() {
-		/*
-		this.modelLoader = new ModelLoader(bgfxLayoutContext);
-		cube = modelLoader.load("/assets/models/primitives/cube.obj");
-		*/
-		Shader shader = Shader.create("vs_cubes", "fs_cubes");
+		Shader shader = Shader.create("test.vert", "test.frag");
 
 		VertexBufferLayout vertexBufferLayout = new VertexBufferLayout(
-			new VertexLayoutAttribute(0, 3, Renderer.dataType.FLOAT,false),
-			new VertexLayoutAttribute(4, 4, Renderer.dataType.FLOAT,false)
+			new VertexLayoutAttribute(0, 3, Renderer.dataType.DATA_FLOAT,false),
+			new VertexLayoutAttribute(4, 4, Renderer.dataType.DATA_FLOAT,false)
 		);
 
 		VertexArray vertexArray = VertexArray.create();
@@ -93,57 +83,19 @@ public class Example extends Application {
 		triangle = SubmitCommand.indexed(vertexArray,shader, "Triangle");
 
 		window.input.onKeyPressed(GLFW_KEY_ESCAPE,event -> stop());
+
+		Renderer.setClearColor(new Vector4f(0.2f,0.2f,0.2f,1f));
+		Renderer.setClearFlags(Renderer.dataType.COLOR_BUFFER|Renderer.dataType.DEPTH_BUFFER|Renderer.dataType.STENCIL_BUFFER);
 	}
 
 	public void update(Event event) {
-		Renderer.startScene();
-		Renderer.setClearColor(Color.RED);
+		Renderer.startScene(camera);
 		Renderer.clear();
-		Renderer.submit(triangle);
+		//Renderer.submit(triangle);
 		Renderer.endScene();
-
-		/*bgfx_dbg_text_printf(0, 1, 0x4f, "bgfx/examples/01-cubes");
-		bgfx_dbg_text_printf(0, 3, 0x0f, String.format("Frame: %7.3f[ms]", ((UpdateEvent)event).frameTime));
-
-
-		renderer.mainRenderer.lookAt(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(0.0f, 0.0f, -35.0f), view);
-		renderer.mainRenderer.perspective(60.0f, window.getWidth(), window.getHeight(), 0.1f, 100.0f, proj);
-
-		bgfx_set_view_transform(0, view.get(viewBuf), proj.get(projBuf));
-
-		long encoder = bgfx_encoder_begin(false);
-
-		bgfx_encoder_set_transform(encoder,
-				model.translation(
-						0f,
-						0f,
-						0f
-				)
-						.rotateAffineXYZ(
-								((UpdateEvent)event).deltaTime,
-								((UpdateEvent)event).deltaTime,
-								0.0f)
-						.get(modelBuf));
-
-		bgfx_encoder_set_vertex_buffer(encoder, 0, vertexBuffer.getBgfxBuffer(), 0, 8, BGFX_INVALID_HANDLE);
-		bgfx_encoder_set_index_buffer(encoder, indexBuffer.getBgfxBuffer(), 0, 36);
-
-		bgfx_encoder_set_state(encoder, BGFX_STATE_DEFAULT, 0);
-
-		bgfx_encoder_submit(encoder, 0, program, 0, false);
-
-		bgfx_encoder_end(encoder);*/
 	}
 
 	public void dispose() {
 		triangle.dispose();
-		/*MemoryUtil.memFree(viewBuf);
-		MemoryUtil.memFree(projBuf);
-		MemoryUtil.memFree(modelBuf);
-
-		bgfx_destroy_program(program);
-
-		cube.dispose();
-		bgfxLayoutContext.dispose();*/
 	}
 }

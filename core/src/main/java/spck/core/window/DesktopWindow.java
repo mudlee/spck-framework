@@ -1,18 +1,21 @@
 package spck.core.window;
 
 import org.joml.Vector2d;
+import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spck.core.eventbus.MessageBus;
 import spck.core.app.events.FrameStartEvent;
 import spck.core.app.events.WindowResizedEvent;
-import spck.core.renderer.GraphicsContext;
+import spck.core.graphics.Antialiasing;
 import spck.core.renderer.Renderer;
 import spck.core.window.input.Input;
 
 import java.nio.DoubleBuffer;
+import java.util.Objects;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -27,6 +30,7 @@ public class DesktopWindow {
 	private final DesktopWindowPreferences preferences;
 	private final boolean debug;
 	private final WindowResizedEvent windowResizedEvent = new WindowResizedEvent();
+	private GLFWVidMode videoMode;
 	private long id;
 
 	public DesktopWindow(DesktopWindowPreferences preferences, boolean debug) {
@@ -44,16 +48,30 @@ public class DesktopWindow {
 		}
 
 		glfwDefaultWindowHints();
-		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 		glfwSetErrorCallback(GLFWErrorCallback.createPrint(System.err));
 
-		id = glfwCreateWindow(preferences.width, preferences.height, preferences.title, NULL, NULL);
+		videoMode = pickMonitor();
 
-		if (id == 0) {
+		if (preferences.antialiasing != Antialiasing.OFF) {
+			glfwWindowHint(GLFW_SAMPLES, preferences.antialiasing.getValue());
+		}
+
+		if (preferences.fullscreen) {
+			preferences.width = videoMode.width();
+			preferences.height = videoMode.height();
+			glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+		}
+
+		id = glfwCreateWindow(preferences.width, preferences.height, preferences.title, preferences.fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
+
+		if (id == NULL) {
 			throw new RuntimeException("Error creating GLFW window");
 		}
 
-		glfwSetFramebufferSizeCallback(id, this::resize);
+		glfwMakeContextCurrent(id);
+		glfwSetWindowSizeCallback(id, this::resize);
 
 		log.debug("Creating input");
 		input.initialize(new Input.InitializationParams(preferences.width, preferences.height, this::cursorPositionHasChanged));
@@ -64,14 +82,26 @@ public class DesktopWindow {
 		glfwSetScrollCallback(id, (window, xOffset, yOffset) -> input.mouseScrollCallback(xOffset, yOffset));
 		glfwSetMouseButtonCallback(id, (window, button, action, mods) -> input.mouseButtonCallback(button, action, mods));
 
+		log.debug("Setting up vsync");
+		glfwSwapInterval(preferences.vsync ? GLFW_TRUE : GLFW_FALSE);
+
 		Renderer.init(id, preferences.width, preferences.height, debug);
+
+		if(!preferences.fullscreen) {
+			glfwSetWindowPos(id,(videoMode.width() - preferences.width) / 2,(videoMode.height() - preferences.height) / 2);
+		}
+
+		glfwShowWindow(id);
 	}
 
 	public void dispose() {
 		Renderer.dispose();
+		MemoryUtil.memFree(mouseCursorAbsolutePositionX);
+		MemoryUtil.memFree(mouseCursorAbsolutePositionY);
 		glfwFreeCallbacks(id);
 		glfwDestroyWindow(id);
 		glfwTerminate();
+		Objects.requireNonNull(glfwSetErrorCallback(null)).free();
 	}
 
 	public void shouldClose() {
@@ -88,6 +118,27 @@ public class DesktopWindow {
 
 	public Input getInput() {
 		return input;
+	}
+
+	private GLFWVidMode pickMonitor() {
+		PointerBuffer buffer = glfwGetMonitors();
+		if(buffer == null) {
+			throw new RuntimeException("No monitors were found");
+		}
+
+		if(buffer.capacity() == 1){
+			log.info("Found one monitor: {}", glfwGetMonitorName(buffer.get()));
+			return glfwGetVideoMode(glfwGetPrimaryMonitor());
+		}
+		else {
+			// TODO: write a monitor picker here
+			log.info("Found multiple monitors:");
+			for (int i = 0; i < buffer.capacity(); i++) {
+				log.info(" Monitor-{} '{}'", i, glfwGetMonitorName(buffer.get(i)));
+			}
+
+			return glfwGetVideoMode(glfwGetPrimaryMonitor());
+		}
 	}
 
 	private void cursorPositionHasChanged(Vector2d target){

@@ -1,12 +1,13 @@
 package spck.core.renderer;
 
-import spck.core.renderer.backend.bgfx.BGFXVertexBuffer;
+import spck.core.renderer.backend.RendererApi;
+import spck.core.renderer.backend.opengl.OpenGLVertexBuffer;
 
 public abstract class VertexBuffer {
     public static VertexBuffer create(float[] vertices, VertexBufferLayout layout) {
-        switch (Renderer.API) {
-            case BGFX:
-                return new BGFXVertexBuffer(vertices, layout);
+        switch (RendererApi.backend) {
+            case OPENGL:
+                return new OpenGLVertexBuffer(vertices, layout);
             default:
                 throw new UnsupportedOperationException();
         }

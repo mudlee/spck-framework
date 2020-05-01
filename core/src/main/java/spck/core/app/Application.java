@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import spck.core.app.events.*;
 import spck.core.eventbus.MessageBus;
 import spck.core.renderer.Renderer;
+import spck.core.renderer.backend.RendererApi;
 import spck.core.window.DesktopWindow;
 import spck.core.window.DesktopWindowPreferences;
 
@@ -16,6 +17,7 @@ public abstract class Application {
     protected final DesktopWindow window;
 
     public Application(DesktopWindowPreferences windowPreferences, boolean debug) {
+        RendererApi.backend = windowPreferences.rendererBackend;
         this.window = new DesktopWindow(windowPreferences, debug);
     }
 

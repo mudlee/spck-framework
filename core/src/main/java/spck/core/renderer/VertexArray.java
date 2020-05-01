@@ -1,12 +1,13 @@
 package spck.core.renderer;
 
-import spck.core.renderer.backend.bgfx.BGFXVertexArray;
+import spck.core.renderer.backend.RendererApi;
+import spck.core.renderer.backend.opengl.OpenGLVertexArray;
 
 public abstract class VertexArray {
     public static VertexArray create(){
-        switch (Renderer.API) {
-            case BGFX:
-                return new BGFXVertexArray();
+        switch (RendererApi.backend) {
+            case OPENGL:
+                return new OpenGLVertexArray();
             default:
                 throw new UnsupportedOperationException();
         }

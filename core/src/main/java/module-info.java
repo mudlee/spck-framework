@@ -1,7 +1,7 @@
 module spck.core {
 	requires com.conversantmedia.disruptor;
 	requires org.lwjgl;
-	requires org.lwjgl.bgfx;
+	requires org.lwjgl.opengl;
 	requires transitive org.lwjgl.glfw;
 	requires org.lwjgl.assimp;
 	requires transitive org.joml;
@@ -12,6 +12,7 @@ module spck.core {
 	exports spck.core.eventbus;
 	exports spck.core.graphics;
 	exports spck.core.renderer;
+	exports spck.core.renderer.camera;
 	exports spck.core.window;
 	exports spck.core.window.input;
 }

@@ -1,6 +1,7 @@
 package spck.core.window;
 
 import spck.core.graphics.Antialiasing;
+import spck.core.renderer.RendererBackend;
 
 public class DesktopWindowPreferences {
 	public Antialiasing antialiasing = Antialiasing.OFF;
@@ -9,11 +10,13 @@ public class DesktopWindowPreferences {
 	public int height = 768;
 	public String title = "SPCK";
 	public boolean vsync;
+	public RendererBackend rendererBackend;
 
 	@Override
 	public String toString() {
 		return "DesktopWindowPreferences{" +
 				"antialiasing=" + antialiasing +
+				", rendererBackend=" + rendererBackend +
 				", fullscreen=" + fullscreen +
 				", width=" + width +
 				", height=" + height +
@@ -25,6 +28,7 @@ public class DesktopWindowPreferences {
 	public static final class Builder {
 		private Antialiasing antialiasing = Antialiasing.OFF;
 		private boolean fullscreen;
+		private RendererBackend rendererBackend;
 		private int width = 1024;
 		private int height = 768;
 		private String title = "SPCK";
@@ -35,6 +39,11 @@ public class DesktopWindowPreferences {
 
 		public static Builder create() {
 			return new Builder();
+		}
+
+		public Builder withRendererBackend(RendererBackend rendererBackend) {
+			this.rendererBackend = rendererBackend;
+			return this;
 		}
 
 		public Builder withAntialiasing(Antialiasing antialiasing) {
@@ -69,6 +78,7 @@ public class DesktopWindowPreferences {
 
 		public DesktopWindowPreferences build() {
 			DesktopWindowPreferences desktopWindowPreferences = new DesktopWindowPreferences();
+			desktopWindowPreferences.rendererBackend = this.rendererBackend;
 			desktopWindowPreferences.vsync = this.vsync;
 			desktopWindowPreferences.title = this.title;
 			desktopWindowPreferences.width = this.width;

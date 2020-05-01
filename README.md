@@ -10,16 +10,19 @@ architecture.
 
 ## Capabilities
 
-* MacOS Support (Metal)
 * Linux Support (OpenGL)
+* Windows Support (OpenGL)
+* MacOS Support (OpenGL)
 * Basic Input System
+
+## Usage
 
 ## TODOs
 
 More or less in priority order:
 
-* Rewrite the demo shaders (basic lights (ambient, point, spot, etc) support)
-* Windows & DX, Linux & Vulkan support
+* Write the demo shaders (basic lights (ambient, point, spot, etc) support)
+* Windows & DX, Linux/OSX & Vulkan support
 * Tools for shader compilation
 * GUI system (Canvases, texts, buttons, etc.)
 * Batch rendering (maybe with ECS)
