@@ -1,9 +1,12 @@
 package spck.core.window;
 
 import org.joml.Vector2d;
+import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +18,14 @@ import spck.core.renderer.Renderer;
 import spck.core.window.input.Input;
 
 import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.Objects;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.glViewport;
+import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class DesktopWindow {
@@ -30,13 +37,18 @@ public class DesktopWindow {
 	private final DesktopWindowPreferences preferences;
 	private final boolean debug;
 	private final WindowResizedEvent windowResizedEvent = new WindowResizedEvent();
+	private final Vector2f windowScale = new Vector2f();
+	private final Vector2i windowSize = new Vector2i();
+	private final Vector2i framebufferSize = new Vector2i();
 	private GLFWVidMode videoMode;
+	private int screenPixelRatio;
 	private long id;
 
 	public DesktopWindow(DesktopWindowPreferences preferences, boolean debug) {
 		this.preferences = preferences;
 		this.debug = debug;
 		this.input = new Input();
+		this.windowSize.set(preferences.width, preferences.height);
 		MessageBus.global.subscribe(FrameStartEvent.key, org.lwjgl.glfw.GLFW::glfwPollEvents);
 	}
 
@@ -61,22 +73,27 @@ public class DesktopWindow {
 		}
 
 		if (preferences.fullscreen) {
-			preferences.width = videoMode.width();
-			preferences.height = videoMode.height();
+			windowSize.set(videoMode.width(), videoMode.height());
 			glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 		}
 
-		id = glfwCreateWindow(preferences.width, preferences.height, preferences.title, preferences.fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
+		id = glfwCreateWindow(windowSize.x, windowSize.y, preferences.title, preferences.fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
 
 		if (id == NULL) {
 			throw new RuntimeException("Error creating GLFW window");
 		}
 
 		glfwMakeContextCurrent(id);
-		glfwSetWindowSizeCallback(id, this::resize);
+
+		glfwSetWindowSizeCallback(id, this::windowResized);
+		glfwSetFramebufferSizeCallback(id, this::framebufferResized);
+		glfwSetWindowContentScaleCallback(id, this::contentScaleChanged);
+		queryFramebufferSize();
+		queryContentScale();
+		calculateScreenPixelRatio();
 
 		log.debug("Creating input");
-		input.initialize(new Input.InitializationParams(preferences.width, preferences.height, this::cursorPositionHasChanged));
+		input.initialize(new Input.InitializationParams(windowSize.x, windowSize.y, this::cursorPositionHasChanged));
 
 		log.debug("Setting up input callbacks");
 		glfwSetKeyCallback(id, (window, key, scancode, action, mods) -> input.keyCallback(key, scancode, action, mods));
@@ -87,12 +104,13 @@ public class DesktopWindow {
 		log.debug("Setting up vsync");
 		glfwSwapInterval(preferences.vsync ? GLFW_TRUE : GLFW_FALSE);
 
-		Renderer.windowCreated(id, preferences.width, preferences.height, debug);
+		Renderer.windowCreated(id, windowSize.x, windowSize.y, debug);
 
 		if (!preferences.fullscreen) {
-			glfwSetWindowPos(id, (videoMode.width() - preferences.width) / 2, (videoMode.height() - preferences.height) / 2);
+			glfwSetWindowPos(id, (videoMode.width() - windowSize.x) / 2, (videoMode.height() - windowSize.y) / 2);
 		}
 
+		log.debug("Window has been setup");
 		glfwShowWindow(id);
 	}
 
@@ -110,12 +128,20 @@ public class DesktopWindow {
 		glfwSetWindowShouldClose(id, true);
 	}
 
-	public int getWidth() {
-		return preferences.width;
+	public Vector2f getWindowScale() {
+		return windowScale;
 	}
 
-	public int getHeight() {
-		return preferences.height;
+	public Vector2i getWindowSize() {
+		return windowSize;
+	}
+
+	public Vector2i getFramebufferSize() {
+		return framebufferSize;
+	}
+
+	public int getScreenPixelRatio() {
+		return screenPixelRatio;
 	}
 
 	public Input getInput() {
@@ -148,15 +174,77 @@ public class DesktopWindow {
 		target.set(mouseCursorAbsolutePositionX.get(), mouseCursorAbsolutePositionY.get());
 	}
 
-	private void resize(long window, int width, int height) {
+	private void windowResized(long window, int width, int height) {
+		windowSize.set(width, height);
+		glViewport(0, 0, width, height);
+		calculateScreenPixelRatio();
+
 		Renderer.windowResized(width, height);
-
-		preferences.width = width;
-		preferences.height = height;
-
 		input.windowResized(width, height);
 
 		windowResizedEvent.set(width, height);
 		MessageBus.global.broadcast(windowResizedEvent);
+		log.debug("Window resized to {}x{}", width, height);
+	}
+
+	private void framebufferResized(long window, int width, int height) {
+		framebufferSize.set(width, height);
+		log.debug("Framebuffer size change to {}x{}", width, height);
+	}
+
+	private void queryFramebufferSize() {
+		try (MemoryStack stack = stackPush()) {
+			IntBuffer w = stack.mallocInt(1);
+			IntBuffer h = stack.mallocInt(1);
+
+			glfwGetFramebufferSize(id, w, h);
+			framebufferSize.set(w.get(0), h.get(0));
+		}
+	}
+
+	private void contentScaleChanged(long window, float xScale, float yScale) {
+		windowScale.set(xScale, yScale);
+		log.debug("Window scale changed to x:{} y:{}", windowScale.x, windowScale.y);
+	}
+
+	private void queryContentScale() {
+		try (MemoryStack stack = stackPush()) {
+			FloatBuffer sx = stack.mallocFloat(1);
+			FloatBuffer sy = stack.mallocFloat(1);
+			glfwGetWindowContentScale(id, sx, sy);
+			windowScale.set(sx.get(), sy.get());
+			log.debug("Window scale changed to x:{} y:{}", windowScale.x, windowScale.y);
+		}
+	}
+
+	private void calculateScreenPixelRatio() {
+		// https://en.wikipedia.org/wiki/4K_resolution
+		int uhdMinWidth = 3840;
+		int uhdMinHeight = 1716;
+		boolean UHD = videoMode.width() >= uhdMinWidth && videoMode.height() >= uhdMinHeight;
+		log.debug("Screen is {}x{}, UHD: {}", videoMode.width(), videoMode.height(), UHD);
+
+		// Check if the monitor is 4K
+		if (UHD) {
+			screenPixelRatio = 2;
+			log.debug("Screen pixel ratio has been set to: {}", screenPixelRatio);
+			return;
+		}
+
+		IntBuffer widthScreenCoordBuf = MemoryUtil.memAllocInt(1);
+		IntBuffer heightScreenCoordBuf = MemoryUtil.memAllocInt(1);
+		IntBuffer widthPixelsBuf = MemoryUtil.memAllocInt(1);
+		IntBuffer heightPixelsBuf = MemoryUtil.memAllocInt(1);
+
+		glfwGetWindowSize(id, widthScreenCoordBuf, heightScreenCoordBuf);
+		glfwGetFramebufferSize(id, widthPixelsBuf, heightPixelsBuf);
+
+		screenPixelRatio = (int) Math.floor((float) widthPixelsBuf.get() / (float) widthScreenCoordBuf.get());
+		log.debug("Screen pixel ratio has been set to: {}", screenPixelRatio);
+
+		MemoryUtil.memFree(widthScreenCoordBuf);
+		MemoryUtil.memFree(heightScreenCoordBuf);
+		MemoryUtil.memFree(widthPixelsBuf);
+		MemoryUtil.memFree(heightPixelsBuf);
 	}
 }

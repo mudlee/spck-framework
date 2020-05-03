@@ -36,6 +36,12 @@ public class OpenGLContext extends GraphicsContext {
 		if (debug) {
 			GLUtil.setupDebugMessageCallback();
 		}
+
+		log.debug("Initialized");
+		log.debug("\tOpenGL Vendor: {}", glGetString(GL_VENDOR));
+		log.debug("\tVersion: {}", glGetString(GL_VERSION));
+		log.debug("\tRenderer: {}", glGetString(GL_RENDERER));
+		log.debug("\tShading Language Version: {}", glGetString(GL_SHADING_LANGUAGE_VERSION));
 	}
 
 	@Override
