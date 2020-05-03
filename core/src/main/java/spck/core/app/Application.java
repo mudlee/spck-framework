@@ -2,7 +2,10 @@ package spck.core.app;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spck.core.app.events.*;
+import spck.core.app.events.DisposeEvent;
+import spck.core.app.events.FrameStartEvent;
+import spck.core.app.events.InitializedEvent;
+import spck.core.app.events.UpdateEvent;
 import spck.core.eventbus.MessageBus;
 import spck.core.renderer.Renderer;
 import spck.core.renderer.backend.RendererApi;
@@ -17,6 +20,7 @@ public abstract class Application {
     protected final DesktopWindow window;
 
     public Application(DesktopWindowPreferences windowPreferences, boolean debug) {
+        log.info("Using renderer backend: {}", windowPreferences.rendererBackend);
         RendererApi.backend = windowPreferences.rendererBackend;
         this.window = new DesktopWindow(windowPreferences, debug);
     }

@@ -2,14 +2,17 @@ package spck.core.renderer;
 
 import spck.core.renderer.backend.RendererApi;
 import spck.core.renderer.backend.opengl.OpenGLVertexBuffer;
+import spck.core.renderer.backend.vulkan.VulkanVertexBuffer;
 
 public abstract class VertexBuffer {
     public static VertexBuffer create(float[] vertices, VertexBufferLayout layout) {
         switch (RendererApi.backend) {
-            case OPENGL:
-                return new OpenGLVertexBuffer(vertices, layout);
-            default:
-                throw new UnsupportedOperationException();
+	        case OPENGL:
+		        return new OpenGLVertexBuffer(vertices, layout);
+	        case VULKAN:
+		        return new VulkanVertexBuffer(vertices, layout);
+	        default:
+		        throw new UnsupportedOperationException();
         }
     }
 

@@ -23,16 +23,17 @@ dependencies {
     api(platform("org.lwjgl:lwjgl-bom:$lwjglVersion"))
 
     api("org.lwjgl", "lwjgl")
-    api("org.lwjgl", "lwjgl-opengl")
     api("org.lwjgl", "lwjgl-glfw")
     api("org.lwjgl", "lwjgl-assimp")
+    api("org.lwjgl", "lwjgl-opengl")
+    api("org.lwjgl", "lwjgl-vulkan")
     runtimeOnly("org.lwjgl", "lwjgl", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-opengl", classifier = lwjglNatives)
     runtimeOnly("org.lwjgl", "lwjgl-glfw", classifier = lwjglNatives)
     runtimeOnly("org.lwjgl", "lwjgl-assimp", classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-opengl", classifier = lwjglNatives)
 
     api("org.joml", "joml", jomlVersion)
     api("org.slf4j", "slf4j-api", slf4jVersion)
     api("org.slf4j", "slf4j-simple", slf4jVersion)
-    api("com.conversantmedia","disruptor", disruptorVersion)
+    api("com.conversantmedia", "disruptor", disruptorVersion)
 }

@@ -27,9 +27,11 @@ public class OpenGLContext extends GraphicsContext {
 	}
 
 	@Override
-	public void windowCreated(long windowId, int windowWidth, int windowHeight, boolean debug) {
+	public void windowCreated(long windowId, int windowWidth, int windowHeight, boolean vSync, boolean debug) {
 		log.debug("Initializing OpenGL context...");
 		this.windowId = windowId;
+
+		glfwMakeContextCurrent(this.windowId);
 
 		createCapabilities();
 
@@ -42,6 +44,9 @@ public class OpenGLContext extends GraphicsContext {
 		log.debug("\tVersion: {}", glGetString(GL_VERSION));
 		log.debug("\tRenderer: {}", glGetString(GL_RENDERER));
 		log.debug("\tShading Language Version: {}", glGetString(GL_SHADING_LANGUAGE_VERSION));
+
+		log.debug("Setting up vsync");
+		glfwSwapInterval(vSync ? GLFW_TRUE : GLFW_FALSE);
 	}
 
 	@Override

@@ -64,7 +64,6 @@ public class DesktopWindow {
 		glfwDefaultWindowHints();
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-		Renderer.init();
 
 		videoMode = pickMonitor();
 
@@ -77,13 +76,13 @@ public class DesktopWindow {
 			glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 		}
 
+		Renderer.init();
 		id = glfwCreateWindow(windowSize.x, windowSize.y, preferences.title, preferences.fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
 
 		if (id == NULL) {
 			throw new RuntimeException("Error creating GLFW window");
 		}
-
-		glfwMakeContextCurrent(id);
+		Renderer.windowCreated(id, windowSize.x, windowSize.y, preferences.vsync, debug);
 
 		glfwSetWindowSizeCallback(id, this::windowResized);
 		glfwSetFramebufferSizeCallback(id, this::framebufferResized);
@@ -100,11 +99,6 @@ public class DesktopWindow {
 		glfwSetCursorPosCallback(id, (window, x, y) -> input.cursorPosCallback(x, y));
 		glfwSetScrollCallback(id, (window, xOffset, yOffset) -> input.mouseScrollCallback(xOffset, yOffset));
 		glfwSetMouseButtonCallback(id, (window, button, action, mods) -> input.mouseButtonCallback(button, action, mods));
-
-		log.debug("Setting up vsync");
-		glfwSwapInterval(preferences.vsync ? GLFW_TRUE : GLFW_FALSE);
-
-		Renderer.windowCreated(id, windowSize.x, windowSize.y, debug);
 
 		if (!preferences.fullscreen) {
 			glfwSetWindowPos(id, (videoMode.width() - windowSize.x) / 2, (videoMode.height() - windowSize.y) / 2);
