@@ -61,8 +61,8 @@ public class OpenGLContext extends GraphicsContext {
 			command.getVertexArray().bind();
 
 			command.getVertexArray().getIndexBuffer().ifPresentOrElse(
-				(buffer) -> glDrawElements(GL_TRIANGLES, buffer.getLength(), GL_UNSIGNED_INT, 0),
-				() -> glDrawArrays(GL_TRIANGLES, 0, 3) // TODO
+					(buffer) -> glDrawElements(GL_TRIANGLES, buffer.getLength(), GL_UNSIGNED_INT, 0),
+					() -> log.error("Cannot render '{}' without a bound index buffer", command.describe())
 			);
 
 			command.getVertexArray().unbind();

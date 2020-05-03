@@ -12,36 +12,43 @@ import java.nio.FloatBuffer;
 import static org.lwjgl.opengl.GL41.*;
 
 public class OpenGLVertexBuffer extends VertexBuffer {
-	private static final Logger log = LoggerFactory.getLogger(OpenGLVertexBuffer.class);
-	private final int id;
-	private final VertexBufferLayout layout;
+    private static final Logger log = LoggerFactory.getLogger(OpenGLVertexBuffer.class);
+    private final int id;
+    private final VertexBufferLayout layout;
+    private final int length;
 
-	public OpenGLVertexBuffer(float[] vertices, VertexBufferLayout layout) {
-		this.layout = layout;
-		id = glGenBuffers();
-		bind();
-		FloatBuffer buffer = (FloatBuffer) ((Buffer) MemoryUtil.memAllocFloat(vertices.length).put(vertices)).flip();
-		glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
-		unbind();
-		MemoryUtil.memFree(buffer);
-		log.debug("VertexBuffer created {}", id);
-	}
+    public OpenGLVertexBuffer(float[] vertices, VertexBufferLayout layout) {
+        this.layout = layout;
+        length = vertices.length;
+        id = glGenBuffers();
+        bind();
+        FloatBuffer buffer = (FloatBuffer) ((Buffer) MemoryUtil.memAllocFloat(vertices.length).put(vertices)).flip();
+        glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
+        unbind();
+        MemoryUtil.memFree(buffer);
+        log.debug("VertexBuffer created {}", id);
+    }
 
-	@Override
-	public int getId() {
-		return id;
-	}
+    @Override
+    public int getId() {
+        return id;
+    }
 
-	@Override
-	public VertexBufferLayout getLayout() {
-		return this.layout;
-	}
+    @Override
+    public int getLength() {
+        return length;
+    }
 
-	@Override
-	public void bind() {
-		log.trace("Bind vertex buffer {}", id);
-		glBindBuffer(GL_ARRAY_BUFFER, id);
-	}
+    @Override
+    public VertexBufferLayout getLayout() {
+        return this.layout;
+    }
+
+    @Override
+    public void bind() {
+        log.trace("Bind vertex buffer {}", id);
+        glBindBuffer(GL_ARRAY_BUFFER, id);
+    }
 
 	@Override
 	public void unbind() {

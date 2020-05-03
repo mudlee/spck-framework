@@ -15,6 +15,8 @@ public abstract class VertexBuffer {
 
     public abstract int getId();
 
+    public abstract int getLength();
+
     public abstract VertexBufferLayout getLayout();
 
     public abstract void bind();

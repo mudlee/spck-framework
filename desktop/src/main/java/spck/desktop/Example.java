@@ -62,6 +62,7 @@ public class Example extends Application {
 			0, 1, 2, 2, 3, 0
 	};
 
+	private SubmitCommand square;
 	private SubmitCommand triangle;
 	private Camera camera = new OrthoCamera();
 
@@ -80,16 +81,21 @@ public class Example extends Application {
 		Shader shader = Shader.create("simple.vert", "simple.frag");
 
 		int stride = 7 * Float.BYTES;
-		VertexBufferLayout vertexBufferLayout = new VertexBufferLayout(
+		VertexBufferLayout layout = new VertexBufferLayout(
 				new VertexLayoutAttribute(0, 3, Renderer.dataType.DATA_FLOAT, false, stride, 0),
 				new VertexLayoutAttribute(1, 4, Renderer.dataType.DATA_FLOAT, false, stride, 3 * Float.BYTES)
 		);
 
-		VertexArray vertexArray = VertexArray.create();
-		vertexArray.addVertexBuffer(VertexBuffer.create(squareColored, vertexBufferLayout));
-		vertexArray.setIndexBuffer(IndexBuffer.create(squareInd));
+		VertexArray va1 = VertexArray.create();
+		va1.addVertexBuffer(VertexBuffer.create(squareColored, layout));
+		va1.setIndexBuffer(IndexBuffer.create(squareInd));
 
-		triangle = SubmitCommand.indexed(vertexArray, shader, "Triangle");
+		VertexArray va2 = VertexArray.create();
+		va2.addVertexBuffer(VertexBuffer.create(triVertColored, layout));
+		va2.setIndexBuffer(IndexBuffer.create(triInd));
+
+		square = SubmitCommand.indexed(va1, shader, "Square");
+		triangle = SubmitCommand.indexed(va2, shader, "Triangle");
 
 		window.input.onKeyPressed(GLFW_KEY_ESCAPE, event -> stop());
 
@@ -100,6 +106,7 @@ public class Example extends Application {
 	public void update(Event event) {
 		Renderer.startScene(camera);
 		Renderer.clear();
+		Renderer.submit(square);
 		Renderer.submit(triangle);
 		Renderer.endScene();
 	}
