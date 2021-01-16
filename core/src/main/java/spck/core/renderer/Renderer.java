@@ -5,17 +5,19 @@ import com.conversantmedia.util.concurrent.PushPullConcurrentQueue;
 import org.joml.Vector4f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spck.core.renderer.backend.opengl.OpenGLContext;
+import spck.core.renderer.backend.opengl.OpenGLDataType;
 import spck.core.renderer.backend.vulkan.VulkanContext;
 import spck.core.renderer.backend.vulkan.VulkanDataType;
 import spck.core.renderer.camera.Camera;
 
 public class Renderer {
-	//public static final DataType dataType = new OpenGLDataType();
-	public static final DataType dataType = new VulkanDataType();
+	public static final DataType dataType = new OpenGLDataType();
+	//public static final DataType dataType = new VulkanDataType();
 
 	private static final Logger log = LoggerFactory.getLogger(Renderer.class);
-	//private static final GraphicsContext context = new OpenGLContext();
-	private static final GraphicsContext context = new VulkanContext();
+	private static final GraphicsContext context = new OpenGLContext();
+	//private static final GraphicsContext context = new VulkanContext();
 	private static final ConcurrentQueue<SubmitCommand> commandQueue = new PushPullConcurrentQueue<>(1000);
 
 	public static void init() {

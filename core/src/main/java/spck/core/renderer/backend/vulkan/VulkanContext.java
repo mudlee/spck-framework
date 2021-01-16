@@ -89,12 +89,14 @@ public class VulkanContext extends GraphicsContext {
 		log.debug("Checking validation layers...");
 		IntBuffer validationLayerCount = memAllocInt(1);
 		int result = vkEnumerateInstanceLayerProperties(validationLayerCount, null);
-		VkResultChecker.check(result, "Unabled to get validation layers' count.");
+		// TODO
+		//VkResultChecker.check(result, "Unabled to get validation layers' count.");
 		log.debug("There are {} available validation layers:", validationLayerCount.get(0));
 
 		VkLayerProperties.Buffer layerProperties = VkLayerProperties.calloc(validationLayerCount.get(0));
 		result = vkEnumerateInstanceLayerProperties(validationLayerCount, layerProperties);
-		VkResultChecker.check(result, "Unabled to get validation layers.");
+		// TODO
+		//VkResultChecker.check(result, "Unabled to get validation layers.");
 		for (int i = 0; i < validationLayerCount.get(0); i++) {
 			VkLayerProperties properties = layerProperties.get(i);
 			log.debug("\t{}, ver: {}, desc: {}", properties.layerNameString(), properties.specVersion(), properties.descriptionString());

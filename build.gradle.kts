@@ -1,6 +1,6 @@
 plugins {
     id("java")
-    id("org.javamodularity.moduleplugin").version("1.6.0").apply(false)
+    id("org.javamodularity.moduleplugin").version("1.7.0").apply(false)
 }
 
 allprojects {

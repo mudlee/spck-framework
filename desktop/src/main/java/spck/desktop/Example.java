@@ -13,6 +13,7 @@ import spck.core.renderer.camera.OrthoCamera;
 import spck.core.window.DesktopWindowPreferences;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
 
 public class Example extends Application {
 	private static final float[] cubeVertices = {
@@ -67,7 +68,7 @@ public class Example extends Application {
 	private Camera camera = new OrthoCamera();
 
 	public Example() {
-		super(DesktopWindowPreferences.Builder.create().withRendererBackend(RendererBackend.VULKAN).build(), true);
+		super(DesktopWindowPreferences.Builder.create().withRendererBackend(RendererBackend.OPENGL).build(), true);
 		MessageBus.global.subscribe(InitializedEvent.key, this::initialized);
 		MessageBus.global.subscribe(UpdateEvent.key, this::update);
 		MessageBus.global.subscribe(DisposeEvent.key, this::dispose);

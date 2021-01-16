@@ -21,6 +21,7 @@ architecture.
 
 More or less in priority order:
 
+* Java 15: https://github.com/java9-modularity/gradle-modules-plugin/issues/169
 * Vulkan backend
 * Write the demo shaders (basic lights (ambient, point, spot, etc) support)
 * Tools for shader compilation

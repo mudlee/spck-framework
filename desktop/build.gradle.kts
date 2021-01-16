@@ -4,7 +4,7 @@ import kotlin.streams.toList
 plugins {
     id("java")
     id("application")
-    id("org.beryx.jlink").version("2.17.2")
+    id("org.beryx.jlink").version("2.23.1")
 }
 
 dependencies {
@@ -31,7 +31,8 @@ fun getJvmArgs(): List<String> {
 application {
     val args = getJvmArgs()
     logger.quiet("JVM args: ${args.joinToString(", ")}")
-    mainClassName = "$moduleName/spck.desktop.Example"
+    mainModule.set(moduleName)
+    mainClass.set("spck.desktop.Example")
     applicationDefaultJvmArgs = args
 }
 

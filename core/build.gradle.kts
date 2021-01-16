@@ -5,7 +5,7 @@ plugins {
 }
 
 val lwjglVersion = "3.2.3"
-val jomlVersion = "1.9.22"
+val jomlVersion = "1.10.0"
 val lwjglNatives = when (OperatingSystem.current()) {
     OperatingSystem.LINUX -> "natives-linux"
     OperatingSystem.MAC_OS -> "natives-macos"
@@ -13,7 +13,7 @@ val lwjglNatives = when (OperatingSystem.current()) {
     else -> throw Error("Unrecognized or unsupported Operating system. Please set \"lwjglNatives\" manually")
 }
 val slf4jVersion = "1.8.0-beta4"
-var disruptorVersion = "1.2.17"
+var disruptorVersion = "1.2.19"
 
 logger.quiet("Natives in use: $lwjglNatives")
 
