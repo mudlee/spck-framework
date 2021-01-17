@@ -4,9 +4,9 @@ import com.conversantmedia.util.concurrent.ConcurrentQueue;
 import org.joml.Vector4f;
 
 public abstract class GraphicsContext {
-    public abstract void init();
+    public abstract void init(long windowId);
 
-    public abstract void windowCreated(long windowId, int windowWidth, int windowHeight, boolean vSync, boolean debug);
+    public abstract void windowCreated(long windowId, int windowWidth, int windowHeight, boolean vSync);
 
     public abstract void setClearFlags(int mask);
 

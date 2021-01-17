@@ -1,5 +1,6 @@
 package spck.core.io;
 
+import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +17,7 @@ import static org.lwjgl.system.MemoryUtil.memAlloc;
 public class ResourceLoader {
     private static final Logger log = LoggerFactory.getLogger(ResourceLoader.class);
 
-    public static ByteBuffer loadToByteBuffer(String path){
+    public static ByteBuffer loadToByteBuffer(String path, MemoryStack stack){
         log.debug("Loading resource {}", path);
         try {
             URL url = ResourceLoader.class.getResource(path);
@@ -29,7 +30,7 @@ public class ResourceLoader {
 
             log.debug("Loading resource '{}' ({}bytes)", url.getFile(), resourceSize);
 
-            ByteBuffer resource = memAlloc(resourceSize);
+            ByteBuffer resource = stack.calloc(resourceSize);
 
             try (BufferedInputStream bis = new BufferedInputStream(url.openStream())) {
                 int b;

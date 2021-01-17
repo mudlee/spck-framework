@@ -1,14 +1,11 @@
 package spck.core.renderer.backend.opengl;
 
-import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spck.core.renderer.IndexBuffer;
 
-import java.nio.Buffer;
-import java.nio.IntBuffer;
-
 import static org.lwjgl.opengl.GL41.*;
+import static org.lwjgl.system.MemoryStack.stackPush;
 
 /**
  * An OpenGL implementation of IndexBuffer
@@ -22,13 +19,14 @@ public class OpenGLIndexBuffer extends IndexBuffer {
     private final int length;
 
     public OpenGLIndexBuffer(int[] indices) {
-        this.length = indices.length;
-        id = glGenBuffers();
-        IntBuffer buffer = (IntBuffer) ((Buffer) MemoryUtil.memAllocInt(indices.length).put(indices)).flip();
-        bind();
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, GL_DYNAMIC_DRAW);
-        MemoryUtil.memFree(buffer);
-        log.debug("IndexBuffer created {}", id);
+        try(final var stack = stackPush()) {
+            this.length = indices.length;
+            id = glGenBuffers();
+            final var buffer = stack.callocInt(indices.length).put(indices).flip();
+            bind();
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
+            log.debug("IndexBuffer created {}", id);
+        }
     }
 
     @Override

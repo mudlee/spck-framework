@@ -5,24 +5,24 @@ This is a WIP project.
 ## Goal
 
 SPCK framework provides a basic toolset (or starter kit) for gamedevs who write their 
-games using their own engines and custom codes, but are not yet setup up cross-platform, future proof
-architecture.
+games using their own engines and custom codes, but are not yet setup up cross-platform architecture.
 
-## Capabilities
+## Current Capabilities
 
-* Linux Support (OpenGL)
-* Windows Support (OpenGL)
-* MacOS Support (OpenGL)
+* Linux Support
+  * OpenGL
+  * WIP: Vulkan
+* MacOS (x86) Support
+  * OpenGL
+  * WIP: Vulkan
 * Basic Input System
-
-## Usage
 
 ## TODOs
 
 More or less in priority order:
 
 * Java 15: https://github.com/java9-modularity/gradle-modules-plugin/issues/169
-* Vulkan backend
+* WIP: Vulkan backend
 * Write the demo shaders (basic lights (ambient, point, spot, etc) support)
 * Tools for shader compilation
 * GUI system (Canvases, texts, buttons, etc.)

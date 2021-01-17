@@ -10,6 +10,7 @@ import java.nio.Buffer;
 import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL41.*;
+import static org.lwjgl.system.MemoryStack.stackPush;
 
 public class OpenGLVertexBuffer extends VertexBuffer {
     private static final Logger log = LoggerFactory.getLogger(OpenGLVertexBuffer.class);
@@ -18,15 +19,16 @@ public class OpenGLVertexBuffer extends VertexBuffer {
     private final int length;
 
     public OpenGLVertexBuffer(float[] vertices, VertexBufferLayout layout) {
-        this.layout = layout;
-        length = vertices.length;
-        id = glGenBuffers();
-        bind();
-        FloatBuffer buffer = (FloatBuffer) ((Buffer) MemoryUtil.memAllocFloat(vertices.length).put(vertices)).flip();
-        glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
-        unbind();
-        MemoryUtil.memFree(buffer);
-        log.debug("VertexBuffer created {}", id);
+        try(final var stack = stackPush()) {
+            this.layout = layout;
+            length = vertices.length;
+            id = glGenBuffers();
+            bind();
+            FloatBuffer buffer = stack.callocFloat(vertices.length).put(vertices).flip();
+            glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
+            unbind();
+            log.debug("VertexBuffer created {}", id);
+        }
     }
 
     @Override

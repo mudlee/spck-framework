@@ -24,9 +24,9 @@ import java.util.Objects;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
+import static org.lwjgl.opengl.GL41.*;
 
 public class DesktopWindow {
 	public final Input input;
@@ -47,7 +47,7 @@ public class DesktopWindow {
 
 	public DesktopWindow(DesktopWindowPreferences preferences, boolean debug) {
 		this.preferences = preferences;
-		this.renderer = new Renderer(preferences.rendererBackend);
+		this.renderer = new Renderer(preferences.rendererBackend, debug);
 		this.debug = debug;
 		this.input = new Input();
 		this.windowSize.set(preferences.width, preferences.height);
@@ -78,13 +78,13 @@ public class DesktopWindow {
 			glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 		}
 
-		renderer.init();
+		renderer.init(id);
 		id = glfwCreateWindow(windowSize.x, windowSize.y, preferences.title, preferences.fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
 
 		if (id == NULL) {
 			throw new RuntimeException("Error creating GLFW window");
 		}
-		renderer.windowCreated(id, windowSize.x, windowSize.y, preferences.vsync, debug);
+		renderer.windowCreated(id, windowSize.x, windowSize.y, preferences.vsync);
 
 		glfwSetWindowSizeCallback(id, this::windowResized);
 		glfwSetFramebufferSizeCallback(id, this::framebufferResized);

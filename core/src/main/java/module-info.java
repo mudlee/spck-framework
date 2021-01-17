@@ -7,6 +7,7 @@ module spck.core {
 	requires org.lwjgl.assimp;
 	requires transitive org.joml;
 	requires transitive org.slf4j;
+	requires org.lwjgl.shaderc;
 
 	exports spck.core.app;
 	exports spck.core.app.events;

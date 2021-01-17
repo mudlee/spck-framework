@@ -6,8 +6,6 @@ import org.slf4j.LoggerFactory;
 import spck.core.io.ResourceLoader;
 import spck.core.renderer.Shader;
 
-import java.nio.IntBuffer;
-
 import static org.lwjgl.opengl.GL41.*;
 
 public class OpenGLShader extends Shader {
@@ -25,13 +23,13 @@ public class OpenGLShader extends Shader {
         glShaderSource(vertexId, ResourceLoader.load(vertPath));
         glCompileShader(vertexId);
         validateShader(vertexId, vertPath);
-        log.debug(" - vertex shader compiled {}", vertexId);
+        log.debug(" * vertex shader compiled {}", vertexId);
 
         int fragmentId = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fragmentId, ResourceLoader.load(fragPath));
         glCompileShader(fragmentId);
         validateShader(fragmentId, fragPath);
-        log.debug(" - fragment shader compiled {}", fragmentId);
+        log.debug(" * fragment shader compiled {}", fragmentId);
 
         glAttachShader(programId, vertexId);
         glAttachShader(programId, fragmentId);
@@ -39,7 +37,7 @@ public class OpenGLShader extends Shader {
         validateShaderProgram(vertPath);
         glDetachShader(programId, vertexId);
         glDetachShader(programId, fragmentId);
-        log.debug(" - shaders linked to program");
+        log.debug(" * shaders linked to program");
     }
 
     @Override
@@ -83,7 +81,7 @@ public class OpenGLShader extends Shader {
     private void validateShaderProgram(String path) {
         log.debug("Validating shader {}",path);
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            IntBuffer buffer = stack.mallocInt(1);
+            final var buffer = stack.callocInt(1);
             glGetProgramiv(programId, GL_LINK_STATUS, buffer);
             if (buffer.get() == GL_FALSE) {
                 log.error(

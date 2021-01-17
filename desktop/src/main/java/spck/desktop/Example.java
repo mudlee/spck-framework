@@ -68,7 +68,7 @@ public class Example extends Application {
 	private Camera camera = new OrthoCamera();
 
 	public Example() {
-		super(DesktopWindowPreferences.Builder.create().withRendererBackend(RendererBackend.VULKAN).build(), true);
+		super(DesktopWindowPreferences.Builder.create().withRendererBackend(RendererBackend.OPENGL).build(), true);
 		MessageBus.global.subscribe(InitializedEvent.key, this::initialized);
 		MessageBus.global.subscribe(UpdateEvent.key, this::update);
 		MessageBus.global.subscribe(DisposeEvent.key, this::dispose);
@@ -79,7 +79,7 @@ public class Example extends Application {
 	}
 
 	public void initialized() {
-		Shader shader = Shader.create("simple.vert", "simple.frag");
+		Shader shader = Shader.create("triangle.vert", "triangle.frag");
 
 		int stride = 7 * Float.BYTES;
 		VertexBufferLayout layout = new VertexBufferLayout(

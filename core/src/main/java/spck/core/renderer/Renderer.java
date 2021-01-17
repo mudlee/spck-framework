@@ -17,15 +17,15 @@ public class Renderer {
 	private final GraphicsContext context;
 	private final ConcurrentQueue<SubmitCommand> commandQueue = new PushPullConcurrentQueue<>(1000);
 
-	public Renderer(RendererBackend backend) {
+	public Renderer(RendererBackend backend, boolean debug) {
 		switch (backend) {
 			case OPENGL:
-				this.context = new OpenGLContext();
+				this.context = new OpenGLContext(debug);
 				this.dataType = new OpenGLDataType();
 				GraphicsData.backend = RendererBackend.OPENGL;
 				break;
 			case VULKAN:
-				this.context = new VulkanContext();
+				this.context = new VulkanContext(debug);
 				this.dataType = new VulkanDataType();
 				GraphicsData.backend = RendererBackend.VULKAN;
 				break;
@@ -34,12 +34,12 @@ public class Renderer {
 		}
 	}
 
-	public void init() {
-		context.init();
+	public void init(long windowId) {
+		context.init(windowId);
 	}
 
-	public void windowCreated(long windowId, int width, int height, boolean vsync, boolean debug) {
-		context.windowCreated(windowId, width, height, vsync, debug);
+	public void windowCreated(long windowId, int width, int height, boolean vsync) {
+		context.windowCreated(windowId, width, height, vsync);
 	}
 
 	public void windowResized(int width, int height) {

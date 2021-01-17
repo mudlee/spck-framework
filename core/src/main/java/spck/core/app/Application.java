@@ -7,7 +7,6 @@ import spck.core.app.events.FrameStartEvent;
 import spck.core.app.events.InitializedEvent;
 import spck.core.app.events.UpdateEvent;
 import spck.core.eventbus.MessageBus;
-import spck.core.renderer.DataType;
 import spck.core.renderer.Renderer;
 import spck.core.window.DesktopWindow;
 import spck.core.window.DesktopWindowPreferences;

@@ -14,20 +14,27 @@ import static org.lwjgl.opengl.GL41.*;
 
 public class OpenGLContext extends GraphicsContext {
 	private static final Logger log = LoggerFactory.getLogger(OpenGLContext.class);
+	private final boolean debug;
 	private int clearFlags = 0;
 	private long windowId;
 
+	public OpenGLContext(boolean debug) {
+		this.debug = debug;
+	}
+
 	@Override
-	public void init() {
+	public void init(long windowId) {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+		if(debug){
+			glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+		}
 	}
 
 	@Override
-	public void windowCreated(long windowId, int windowWidth, int windowHeight, boolean vSync, boolean debug) {
+	public void windowCreated(long windowId, int windowWidth, int windowHeight, boolean vSync) {
 		log.debug("Initializing OpenGL context...");
 		this.windowId = windowId;
 

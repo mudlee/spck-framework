@@ -1,12 +1,9 @@
-#version 410 core
+#version 410
+#extension GL_ARB_separate_shader_objects : enable
 
-layout (location = 0) out vec4 FINAL_COLOR;
+layout(location = 0) in vec3 fragColor;
+layout(location = 0) out vec4 outColor;
 
-in VERTEX_SHADER_OUT {
-    vec4 color;
-} SHADER_INPUT;
-
-void main()
-{
-    FINAL_COLOR = SHADER_INPUT.color;
+void main() {
+    outColor = vec4(fragColor, 1.0);
 }
