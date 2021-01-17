@@ -1,12 +1,11 @@
 package spck.core.renderer;
 
-import spck.core.renderer.backend.RendererApi;
 import spck.core.renderer.backend.opengl.OpenGLIndexBuffer;
 import spck.core.renderer.backend.vulkan.VulkanIndexBuffer;
 
-public abstract class IndexBuffer {
+public abstract class IndexBuffer extends GraphicsData{
     public static IndexBuffer create(int[] indices) {
-        switch (RendererApi.backend) {
+        switch (backend) {
 	        case OPENGL:
 		        return new OpenGLIndexBuffer(indices);
 	        case VULKAN:

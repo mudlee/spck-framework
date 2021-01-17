@@ -7,8 +7,8 @@ import spck.core.app.events.FrameStartEvent;
 import spck.core.app.events.InitializedEvent;
 import spck.core.app.events.UpdateEvent;
 import spck.core.eventbus.MessageBus;
+import spck.core.renderer.DataType;
 import spck.core.renderer.Renderer;
-import spck.core.renderer.backend.RendererApi;
 import spck.core.window.DesktopWindow;
 import spck.core.window.DesktopWindowPreferences;
 
@@ -21,7 +21,6 @@ public abstract class Application {
 
     public Application(DesktopWindowPreferences windowPreferences, boolean debug) {
         log.info("Using renderer backend: {}", windowPreferences.rendererBackend);
-        RendererApi.backend = windowPreferences.rendererBackend;
         this.window = new DesktopWindow(windowPreferences, debug);
     }
 
@@ -46,6 +45,10 @@ public abstract class Application {
         running = false;
     }
 
+    protected Renderer renderer() {
+        return window.renderer;
+    }
+
     private void loop() {
         running = true;
 
@@ -61,7 +64,7 @@ public abstract class Application {
             // TODO
             updateEvent.set(60f, frameTime);
             MessageBus.global.broadcast(updateEvent);
-            Renderer.swapBuffers(frameTime);
+            window.renderer.swapBuffers(frameTime);
         }
     }
 }

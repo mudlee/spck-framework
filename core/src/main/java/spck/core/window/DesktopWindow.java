@@ -30,6 +30,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class DesktopWindow {
 	public final Input input;
+	public final Renderer renderer;
 
 	private static final Logger log = LoggerFactory.getLogger(DesktopWindow.class);
 	private final DoubleBuffer mouseCursorAbsolutePositionX = MemoryUtil.memAllocDouble(1);
@@ -46,6 +47,7 @@ public class DesktopWindow {
 
 	public DesktopWindow(DesktopWindowPreferences preferences, boolean debug) {
 		this.preferences = preferences;
+		this.renderer = new Renderer(preferences.rendererBackend);
 		this.debug = debug;
 		this.input = new Input();
 		this.windowSize.set(preferences.width, preferences.height);
@@ -76,13 +78,13 @@ public class DesktopWindow {
 			glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 		}
 
-		Renderer.init();
+		renderer.init();
 		id = glfwCreateWindow(windowSize.x, windowSize.y, preferences.title, preferences.fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
 
 		if (id == NULL) {
 			throw new RuntimeException("Error creating GLFW window");
 		}
-		Renderer.windowCreated(id, windowSize.x, windowSize.y, preferences.vsync, debug);
+		renderer.windowCreated(id, windowSize.x, windowSize.y, preferences.vsync, debug);
 
 		glfwSetWindowSizeCallback(id, this::windowResized);
 		glfwSetFramebufferSizeCallback(id, this::framebufferResized);
@@ -109,7 +111,7 @@ public class DesktopWindow {
 	}
 
 	public void dispose() {
-		Renderer.dispose();
+		renderer.dispose();
 		MemoryUtil.memFree(mouseCursorAbsolutePositionX);
 		MemoryUtil.memFree(mouseCursorAbsolutePositionY);
 		glfwFreeCallbacks(id);
@@ -173,7 +175,7 @@ public class DesktopWindow {
 		glViewport(0, 0, width, height);
 		calculateScreenPixelRatio();
 
-		Renderer.windowResized(width, height);
+		renderer.windowResized(width, height);
 		input.windowResized(width, height);
 
 		windowResizedEvent.set(width, height);

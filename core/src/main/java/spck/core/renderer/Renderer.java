@@ -12,57 +12,71 @@ import spck.core.renderer.backend.vulkan.VulkanDataType;
 import spck.core.renderer.camera.Camera;
 
 public class Renderer {
-	public static final DataType dataType = new OpenGLDataType();
-	//public static final DataType dataType = new VulkanDataType();
-
+	public final DataType dataType;
 	private static final Logger log = LoggerFactory.getLogger(Renderer.class);
-	private static final GraphicsContext context = new OpenGLContext();
-	//private static final GraphicsContext context = new VulkanContext();
-	private static final ConcurrentQueue<SubmitCommand> commandQueue = new PushPullConcurrentQueue<>(1000);
+	private final GraphicsContext context;
+	private final ConcurrentQueue<SubmitCommand> commandQueue = new PushPullConcurrentQueue<>(1000);
 
-	public static void init() {
+	public Renderer(RendererBackend backend) {
+		switch (backend) {
+			case OPENGL:
+				this.context = new OpenGLContext();
+				this.dataType = new OpenGLDataType();
+				GraphicsData.backend = RendererBackend.OPENGL;
+				break;
+			case VULKAN:
+				this.context = new VulkanContext();
+				this.dataType = new VulkanDataType();
+				GraphicsData.backend = RendererBackend.VULKAN;
+				break;
+			default:
+				throw new UnsupportedOperationException();
+		}
+	}
+
+	public void init() {
 		context.init();
 	}
 
-	public static void windowCreated(long windowId, int width, int height, boolean vsync, boolean debug) {
+	public void windowCreated(long windowId, int width, int height, boolean vsync, boolean debug) {
 		context.windowCreated(windowId, width, height, vsync, debug);
 	}
 
-	public static void windowResized(int width, int height) {
+	public void windowResized(int width, int height) {
 		context.windowResized(width, height);
 	}
 
-	public static void setClearColor(Vector4f color) {
+	public void setClearColor(Vector4f color) {
 		context.setClearColor(color);
 	}
 
-	public static void setClearFlags(int mask) {
+	public void setClearFlags(int mask) {
 		context.setClearFlags(mask);
 	}
 
-	public static void clear() {
+	public void clear() {
 		context.clear();
 	}
 
-	public static void startScene(Camera camera) {
+	public void startScene(Camera camera) {
 		// TBD: lights, camera, etc
 	}
 
-	public static void submit(SubmitCommand command) {
+	public void submit(SubmitCommand command) {
 		if (!commandQueue.offer(command)) {
 			log.warn("Could not submit '{}', no more slot available", command.describe());
 		}
 	}
 
-	public static void endScene() {
+	public void endScene() {
 		// TBD, maybe batching, sorting
 	}
 
-	public static void swapBuffers(float frameTime) {
+	public void swapBuffers(float frameTime) {
 		context.swapBuffers(frameTime, commandQueue);
 	}
 
-	public static void dispose() {
+	public void dispose() {
 		context.dispose();
 	}
 }

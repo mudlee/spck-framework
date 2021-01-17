@@ -68,7 +68,7 @@ public class Example extends Application {
 	private Camera camera = new OrthoCamera();
 
 	public Example() {
-		super(DesktopWindowPreferences.Builder.create().withRendererBackend(RendererBackend.OPENGL).build(), true);
+		super(DesktopWindowPreferences.Builder.create().withRendererBackend(RendererBackend.VULKAN).build(), true);
 		MessageBus.global.subscribe(InitializedEvent.key, this::initialized);
 		MessageBus.global.subscribe(UpdateEvent.key, this::update);
 		MessageBus.global.subscribe(DisposeEvent.key, this::dispose);
@@ -83,8 +83,8 @@ public class Example extends Application {
 
 		int stride = 7 * Float.BYTES;
 		VertexBufferLayout layout = new VertexBufferLayout(
-				new VertexLayoutAttribute(0, 3, Renderer.dataType.DATA_FLOAT, false, stride, 0),
-				new VertexLayoutAttribute(1, 4, Renderer.dataType.DATA_FLOAT, false, stride, 3 * Float.BYTES)
+				new VertexLayoutAttribute(0, 3, renderer().dataType.DATA_FLOAT, false, stride, 0),
+				new VertexLayoutAttribute(1, 4, renderer().dataType.DATA_FLOAT, false, stride, 3 * Float.BYTES)
 		);
 
 		VertexArray va1 = VertexArray.create();
@@ -100,16 +100,16 @@ public class Example extends Application {
 
 		window.input.onKeyPressed(GLFW_KEY_ESCAPE, event -> stop());
 
-		Renderer.setClearColor(new Vector4f(0.2f, 0.2f, 0.2f, 1f));
-		Renderer.setClearFlags(Renderer.dataType.COLOR_BUFFER | Renderer.dataType.DEPTH_BUFFER | Renderer.dataType.STENCIL_BUFFER);
+		renderer().setClearColor(new Vector4f(0.2f, 0.2f, 0.2f, 1f));
+		renderer().setClearFlags(renderer().dataType.COLOR_BUFFER | renderer().dataType.DEPTH_BUFFER | renderer().dataType.STENCIL_BUFFER);
 	}
 
 	public void update(Event event) {
-		Renderer.startScene(camera);
-		Renderer.clear();
-		Renderer.submit(square);
-		Renderer.submit(triangle);
-		Renderer.endScene();
+		renderer().startScene(camera);
+		renderer().clear();
+		renderer().submit(square);
+		renderer().submit(triangle);
+		renderer().endScene();
 	}
 
 	public void dispose() {
