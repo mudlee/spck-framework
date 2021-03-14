@@ -8,12 +8,10 @@ out gl_PerVertex {
     vec4 gl_Position;
 };
 
-layout (location = 0) out struct {
-    vec4 color;
-} VERTEX_OUTPUT;
+layout (location = 0) out vec4 V_COLOR;
 
 void main()
 {
     gl_Position = vec4(position, 1.0);
-    VERTEX_OUTPUT.color = color;
+    V_COLOR = color;
 }
