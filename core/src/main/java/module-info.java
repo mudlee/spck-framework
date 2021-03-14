@@ -2,7 +2,6 @@ module spck.core {
 	requires com.conversantmedia.disruptor;
 	requires org.lwjgl;
 	requires org.lwjgl.opengl;
-	requires org.lwjgl.vulkan;
 	requires transitive org.lwjgl.glfw;
 	requires org.lwjgl.assimp;
 	requires transitive org.joml;

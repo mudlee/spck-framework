@@ -26,16 +26,12 @@ dependencies {
     api("org.lwjgl", "lwjgl-glfw")
     api("org.lwjgl", "lwjgl-assimp")
     api("org.lwjgl", "lwjgl-opengl")
-    api("org.lwjgl", "lwjgl-vulkan")
     api("org.lwjgl", "lwjgl-shaderc")
     runtimeOnly("org.lwjgl", "lwjgl", classifier = lwjglNatives)
     runtimeOnly("org.lwjgl", "lwjgl-glfw", classifier = lwjglNatives)
     runtimeOnly("org.lwjgl", "lwjgl-assimp", classifier = lwjglNatives)
     runtimeOnly("org.lwjgl", "lwjgl-opengl", classifier = lwjglNatives)
     runtimeOnly("org.lwjgl", "lwjgl-shaderc", classifier = lwjglNatives)
-    if(OperatingSystem.current().isMacOsX) {
-        runtimeOnly("org.lwjgl", "lwjgl-vulkan", classifier = lwjglNatives)
-    }
 
     api("org.joml", "joml", jomlVersion)
     api("org.slf4j", "slf4j-api", slf4jVersion)

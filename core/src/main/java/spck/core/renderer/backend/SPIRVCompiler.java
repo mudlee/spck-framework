@@ -3,7 +3,6 @@ package spck.core.renderer.backend;
 import org.lwjgl.util.shaderc.Shaderc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spck.core.renderer.backend.vulkan.ShadercCompilationStatus;
 
 import java.nio.ByteBuffer;
 

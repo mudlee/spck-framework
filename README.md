@@ -11,10 +11,8 @@ games using their own engines and custom codes, but are not yet setup up cross-p
 
 * Linux Support
   * OpenGL
-  * WIP: Vulkan
 * MacOS (x86) Support
   * OpenGL
-  * WIP: Vulkan
 * Basic Input System
 
 ## TODOs
@@ -22,7 +20,7 @@ games using their own engines and custom codes, but are not yet setup up cross-p
 More or less in priority order:
 
 * Java 15: https://github.com/java9-modularity/gradle-modules-plugin/issues/169
-* WIP: Vulkan backend
+* Vulkan backend
 * Write the demo shaders (basic lights (ambient, point, spot, etc) support)
 * Tools for shader compilation
 * GUI system (Canvases, texts, buttons, etc.)

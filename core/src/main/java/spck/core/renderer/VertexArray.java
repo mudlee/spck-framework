@@ -1,7 +1,6 @@
 package spck.core.renderer;
 
 import spck.core.renderer.backend.opengl.OpenGLVertexArray;
-import spck.core.renderer.backend.vulkan.VulkanVertexArray;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,8 +10,6 @@ public abstract class VertexArray extends GraphicsData {
         switch (backend) {
             case OPENGL:
                 return new OpenGLVertexArray();
-            case VULKAN:
-                return new VulkanVertexArray();
             default:
                 throw new UnsupportedOperationException();
         }

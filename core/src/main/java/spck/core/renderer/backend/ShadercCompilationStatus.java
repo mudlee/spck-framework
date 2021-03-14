@@ -1,4 +1,4 @@
-package spck.core.renderer.backend.vulkan;
+package spck.core.renderer.backend;
 
 public class ShadercCompilationStatus {
   public static String translate(int code) {

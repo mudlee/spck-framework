@@ -7,8 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spck.core.renderer.backend.opengl.OpenGLContext;
 import spck.core.renderer.backend.opengl.OpenGLDataType;
-import spck.core.renderer.backend.vulkan.VulkanContext;
-import spck.core.renderer.backend.vulkan.VulkanDataType;
 import spck.core.renderer.camera.Camera;
 
 public class Renderer {
@@ -23,11 +21,6 @@ public class Renderer {
 				this.context = new OpenGLContext(debug);
 				this.dataType = new OpenGLDataType();
 				GraphicsData.backend = RendererBackend.OPENGL;
-				break;
-			case VULKAN:
-				this.context = new VulkanContext(debug);
-				this.dataType = new VulkanDataType();
-				GraphicsData.backend = RendererBackend.VULKAN;
 				break;
 			default:
 				throw new UnsupportedOperationException();
