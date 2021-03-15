@@ -4,7 +4,7 @@ plugins {
     id("java-library")
 }
 
-val lwjglVersion = "3.2.4-SNAPSHOT"
+val lwjglVersion = "3.3.0-SNAPSHOT"
 val jomlVersion = "1.10.0"
 val lwjglNatives = when (OperatingSystem.current()) {
     OperatingSystem.LINUX -> "natives-linux"

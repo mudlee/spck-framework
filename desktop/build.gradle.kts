@@ -4,7 +4,7 @@ import kotlin.streams.toList
 plugins {
     id("java")
     id("application")
-    id("org.beryx.jlink").version("2.23.1")
+    id("org.beryx.jlink").version("2.23.3")
 }
 
 dependencies {
@@ -38,6 +38,8 @@ application {
 
 jlink {
     val args = getJvmArgs()
+    // https://github.com/beryx-gist/badass-jlink-example-richtextfx/blob/master/build.gradle
+    // jvmArgs = ['-splash:$APPDIR/splash.png']
     logger.quiet("JVM args: ${args.joinToString(", ")}")
     addOptions("--strip-debug", "--compress", "2", "--no-header-files", "--no-man-pages")
 

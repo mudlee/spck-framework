@@ -6,7 +6,6 @@ This is a WIP project.
 
 ### Short Term
 
-- SPIR-V with OpenGL
 - App is distributable
 - Complete event system
 - Window can be resized
